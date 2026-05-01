@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
+<<<<<<< HEAD
         android:label="flutter_product_crud"
+=======
+        android:label="flttercrud"
+>>>>>>> 13da198feb574d29bfbe370757c57f9dd95a67e0
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

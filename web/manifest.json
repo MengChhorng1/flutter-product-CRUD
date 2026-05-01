@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "flutter_product_crud",
     "short_name": "flutter_product_crud",
+=======
+    "name": "flttercrud",
+    "short_name": "flttercrud",
+>>>>>>> 13da198feb574d29bfbe370757c57f9dd95a67e0
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
