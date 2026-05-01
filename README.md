@@ -71,11 +71,7 @@ My goal is to become a professional software developer who builds reliable, user
     <td width="100%">
       <h3 align="center">Product CRUD Operations</h3>
       <a href="#">
-<<<<<<< HEAD
         <img src="./lib/image/Poster of (Product CRUD Operations)1.png" alt="Product CRUD Operations" width="100%" />
-=======
-        <img src="./src/assets/Poster of (Product CRUD Operations)1.png" alt="Product CRUD Operations" width="100%" />
->>>>>>> 13da198feb574d29bfbe370757c57f9dd95a67e0
       </a>
       <p>
         Manage your inventory with powerful Create, Read, Update, and Delete workflows. Organized. Efficient. Intuitive.
