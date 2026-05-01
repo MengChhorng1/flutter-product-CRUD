@@ -43,12 +43,13 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
       appBar: AppBar(
         foregroundColor: Colors.white,
         elevation: 4,
+        backgroundColor: Colors.teal,
         // centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.purpleAccent, Colors.blueAccent], begin: Alignment.topLeft, end: Alignment.bottomRight),
-          ),
-        ),
+        // flexibleSpace: Container(
+        //   decoration: const BoxDecoration(
+        //     gradient: LinearGradient(colors: [Colors.purpleAccent, Colors.blueAccent], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        //   ),
+        // ),
         title: Text(isEdit ? 'Edit Product' : 'Add Product', style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(

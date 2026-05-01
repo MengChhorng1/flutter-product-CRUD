@@ -19,7 +19,8 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  final String? icon = null;
+  String? result;
+  final IconData? icon = null;
   final RefreshController _refreshController = RefreshController();
   final ScrollController _scrollController = ScrollController();
   bool isExpanded = false;
@@ -88,6 +89,93 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return filtered;
   }
 
+  void _showCustomDialog(BuildContext context) {
+    final TextEditingController nameCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            width: double.maxFinite,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Gradient header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: const LinearGradient(colors: [Colors.deepPurple, Colors.indigo]),
+                  ),
+                  child: const Text(
+                    'Custom Menu Dialog',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Body content
+                const Text('Enter your name below:', style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameCtrl,
+                  
+                  decoration: const InputDecoration(filled: true, fillColor: Colors.white, contentPadding: EdgeInsets.all(10),prefixIcon: Icon(Icons.person),border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(100))), hintText: 'Your name'),
+                ),
+                const SizedBox(height: 20),
+
+                // **New Button to open another dialog**
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                  onPressed: () {
+                    // show a SECOND dialog on top of this one
+                    showDialog(
+                      context: ctx,
+                      builder: (_) => AlertDialog(
+                        title: Text('Inner Dialog', style: TextStyle(color: Colors.pink)),
+                        content: const Text('This dialog was opened from inside the first one!'),
+                        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                      ),
+                    );
+                  },
+                  child: const Text('Open Inner Dialog', style: TextStyle(color: Colors.white)),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Buttons row (Cancel / Save)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple, iconColor: Colors.white),
+                      icon: const Icon(Icons.check),
+                      label: const Text('Save', style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        final name = nameCtrl.text.trim();
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hello, $name!')));
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _exportToPdf(List<Product> products) async {
     final PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
@@ -139,15 +227,43 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> pickRange() async {
+      final d = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime.now().subtract(const Duration(days: 365)),
+        lastDate: DateTime.now().add(const Duration(days: 365)),
+      );
+      if (d == null) return;
+
+      final t1 = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+      if (t1 == null) return;
+      final t2 = await showTimePicker(context: context, initialTime: t1);
+      if (t2 == null) return;
+
+      setState(
+        () => result =
+            '${d.start.toString().split(" ")[0]} ${t1.format(context)}'
+            '→ ${d.end.toString().split(" ")[0]} ${t2.format(context)}',
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        elevation: 4,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.blueAccent, Colors.purpleAccent], begin: Alignment.topLeft, end: Alignment.bottomRight),
-          ),
+        leading: IconButton(
+          onPressed: () {
+            _showCustomDialog(context);
+          },
+          icon: Icon(Icons.menu),
+          color: Colors.white,
         ),
+        elevation: 4,
+        // flexibleSpace: Container(
+        //   decoration: const BoxDecoration(
+        //     gradient: LinearGradient(colors: [Colors.blueAccent, Colors.purpleAccent], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        //   ),
+        // ),
+        backgroundColor: Colors.teal,
         title: const Text(
           'Products',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -169,8 +285,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const AddEditProductScreen()));
             },
           ),
+          IconButton(icon: const Icon(Icons.timer_sharp), color: Colors.white, onPressed: pickRange),
         ],
       ),
+
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => FocusScope.of(context).unfocus(),
@@ -191,6 +309,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
             ),
+            if (result != null)
+              Text(
+                result!,
+                style: const TextStyle(color: Colors.blueAccent),
+                textAlign: TextAlign.center,
+              ),
             Expanded(
               child: Consumer<ProductProvider>(
                 builder: (context, provider, child) {
